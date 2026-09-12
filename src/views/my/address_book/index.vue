@@ -53,13 +53,15 @@
         <el-table-column prop="alias" :label="T('Alias')" align="center" width="150"/>
         <el-table-column prop="peer.version" :label="T('Version')" align="center" width="100"/>
         <el-table-column prop="hash" :label="T('Hash')" align="center" width="150" show-overflow-tooltip/>
-        <el-table-column :label="T('Actions')" align="center" class-name="table-actions" width="600" fixed="right">
+        <el-table-column :label="T('Actions')" align="right" class-name="table-actions" width="176" fixed="right">
           <template #default="{row}">
-            <el-button type="success" @click="connectByClient(row.id)">{{ T('Link') }}</el-button>
-            <el-button v-if="appStore.setting.appConfig.web_client" type="success" @click="toWebClientLink(row)">Web Client</el-button>
-            <el-button v-if="appStore.setting.appConfig.web_client" type="primary" @click="toShowShare(row)">{{ T('ShareByWebClient') }}</el-button>
-            <el-button @click="toEdit(row)">{{ T('Edit') }}</el-button>
-            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="connect" kind="primary" :title="T('Link')" @click="connectByClient(row.id)"/>
+              <icon-btn v-if="appStore.setting.appConfig.web_client" name="web" title="Web Client" @click="toWebClientLink(row)"/>
+              <icon-btn v-if="appStore.setting.appConfig.web_client" name="share" :title="T('ShareByWebClient')" @click="toShowShare(row)"/>
+              <icon-btn name="edit" :title="T('Edit')" @click="toEdit(row)"/>
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="del(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>

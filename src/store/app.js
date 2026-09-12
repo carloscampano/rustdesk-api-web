@@ -18,14 +18,20 @@ const langs = {
   'es': { name: 'Español', value: es, sideBarWidth: '280px' },
   'zh-TW': { name: '中文繁体', value: zhTw, sideBarWidth: '210px' },
 }
-const defaultLang = localStorage.getItem('lang') || navigator.language || 'zh-CN'
+function resolveLang (raw) {
+  if (langs[raw]) return raw
+  const short = String(raw || '').split('-')[0]
+  if (langs[short]) return short
+  return 'es'
+}
+const defaultLang = resolveLang(localStorage.getItem('lang') || navigator.language)
 export const useAppStore = defineStore({
   id: 'App',
   state: () => ({
     setting: {
       title: 'Rustdesk API Admin',
       hello: '',
-      sideIsCollapse: false,
+      sideIsCollapse: localStorage.getItem('sidebar-collapsed') === '1',
       logo,
       langs: langs,
       lang: defaultLang,
@@ -45,6 +51,7 @@ export const useAppStore = defineStore({
   actions: {
     sideCollapse () {
       this.setting.sideIsCollapse = !this.setting.sideIsCollapse
+      localStorage.setItem('sidebar-collapsed', this.setting.sideIsCollapse ? '1' : '0')
     },
     setLang (lang) {
       console.log('setLang', lang)

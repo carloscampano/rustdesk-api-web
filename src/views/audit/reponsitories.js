@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import { list, remove, fileList, fileRemove, batchDelete, fileBatchDelete } from '@/api/audit'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { formatTime } from '@/utils/time'
+import { parseApiTime, formatChileDateTime } from '@/utils/time'
 import { T } from '@/utils/i18n'
 import { downBlob, jsonToCsv } from '@/utils/file'
 
@@ -22,7 +22,8 @@ export function useRepositories () {
     listRes.loading = false
     if (res) {
       listRes.list = res.data.list.map(item => {
-        item.close_time = item.close_time ? formatTime(item.close_time * 1000) : '-'
+        item.created_at = formatChileDateTime(parseApiTime(item.created_at))
+        item.close_time = item.close_time ? formatChileDateTime(parseApiTime(item.close_time)) : '-'
         return item
       })
       listRes.total = res.data.total

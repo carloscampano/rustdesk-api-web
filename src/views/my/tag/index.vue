@@ -36,10 +36,12 @@
         </el-table-column>
         <el-table-column prop="created_at" :label="T('CreatedAt')" align="center"/>
         <el-table-column prop="updated_at" :label="T('UpdatedAt')" align="center"/>
-        <el-table-column :label="T('Actions')" align="center">
+        <el-table-column :label="T('Actions')" align="right" width="84" class-name="table-actions">
           <template #default="{row}">
-            <el-button @click="toEdit(row)">{{ T('Edit') }}</el-button>
-            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="edit" :title="T('Edit')" @click="toEdit(row)"/>
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="del(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>

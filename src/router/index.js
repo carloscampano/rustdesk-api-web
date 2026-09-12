@@ -102,10 +102,16 @@ export const asyncRoutes = [
   {
     path: '/user',
     name: 'User',
-    redirect: '/user/index',
+    redirect: '/home',
     meta: { title: 'System', icon: 'Setting' },
     component: () => import('@/layout/index.vue'),
     children: [
+      {
+        path: '/home',
+        name: 'Home',
+        meta: { title: 'Home', icon: 'house' },
+        component: () => import('@/views/index/index.vue'),
+      },
       {
         path: 'peer',
         name: 'Peer',
@@ -200,7 +206,7 @@ export const asyncRoutes = [
         path: '/serverCmd',
         name: 'ServerCmd',
         meta: { title: 'ServerCmd', icon: 'Tools' /*keepAlive: true*/ },
-        component: () => import('@/views/rustdesk/control.vue'),
+        component: () => import('@/views/rustdesk/settings.vue'),
       },
     ],
   },

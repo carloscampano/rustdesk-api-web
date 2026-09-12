@@ -39,9 +39,11 @@
         <el-table-column prop="type" label="type" align="center" width="100"/>
         <el-table-column prop="platform" label="Platform/UA" align="center" width="120" show-overflow-tooltip/>
         <el-table-column prop="created_at" :label="T('CreatedAt')" align="center"/>
-        <el-table-column :label="T('Actions')" align="center" width="400">
+        <el-table-column :label="T('Actions')" align="right" width="56" class-name="table-actions">
           <template #default="{row}">
-            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="del(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>

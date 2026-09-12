@@ -59,6 +59,7 @@
   import changePwdDialog from '@/components/changePwdDialog.vue'
   import { ref } from 'vue'
   import { T } from '@/utils/i18n'
+  import { hardLogoutRedirect } from '@/utils/auth'
   import { useDark } from '@vueuse/core'
   import { Sunny, Moon } from '@element-plus/icons'
 
@@ -67,8 +68,8 @@
   const appStore = useAppStore()
 
   const logout = () => {
-    userStore.logout()
-    window.location.reload()
+    userStore.logout().catch(() => {})
+    hardLogoutRedirect()
   }
 
   const changePwdVisible = ref(false)

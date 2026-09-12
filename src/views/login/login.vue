@@ -82,12 +82,28 @@
   })
 
   const captchaCode = ref('')
-  const redirect = route.query?.redirect
+  const homePath = () => {
+    const names = userStore.route_names || []
+    if (names.includes('*') || names.includes('Peer') || names.includes('Home')) return '/home'
+    return '/'
+  }
+  const goAfterLogin = () => {
+    const r = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+    if (r.startsWith('/webclient') || r.startsWith('http://') || r.startsWith('https://')) {
+      window.location.replace(r)
+      return
+    }
+    if (r && r !== '/404' && r !== '/login') {
+      router.push({ path: r, replace: true })
+      return
+    }
+    router.push({ path: homePath(), replace: true })
+  }
   const login = async () => {
     const res = await userStore.login(form).catch(e => e)
     if (!res.code) {
       ElMessage.success(T('LoginSuccess'))
-      router.push({ path: redirect || '/', replace: true })
+      goAfterLogin()
       return
     }
     if (res.code === 110) {
@@ -155,7 +171,7 @@
         // 删除code，确保跳转之前对code进行清楚
         removeCode()
         ElMessage.success(T('LoginSuccess'))
-        router.push({ path: redirect || '/', replace: true })
+        goAfterLogin()
       }
     } else {
       // 如果code不存在, 现实登陆页面
@@ -174,17 +190,17 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #2d3a4b;
+  background-color: #f4f0ea;
   padding: 20px;
   box-sizing: border-box;
 }
 
 .login-card {
-  width: 360px;
-  background-color: #283342;
+  width: 400px;
+  background-color: #ffffff;
   padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(60, 45, 30, 0.06), 0 0 0 1px rgba(60, 45, 30, 0.05);
   text-align: center;
 }
 
@@ -280,18 +296,8 @@ h1 {
 
 .el-form-item {
   ::v-deep(.el-form-item__label) {
-    color: #fff;
-  }
-
-  .el-input {
-    ::v-deep(.el-input__wrapper) {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-    }
-
-    ::v-deep(input) {
-      color: #fff;
-    }
+    color: #6e655d;
+    font-weight: 600;
   }
 }
 </style>

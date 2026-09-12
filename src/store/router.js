@@ -30,10 +30,14 @@ export const useRouteStore = defineStore({
   }),
   actions: {
     addRoutes (accessRouteNames) {
-      if (accessRouteNames.includes('*')) {
+      let names = accessRouteNames
+      if (!names.includes('*') && (names.includes('Peer') || names.includes('ServerCmd')) && !names.includes('Home')) {
+        names = [...names, 'Home']
+      }
+      if (names.includes('*')) {
         this.routes = asyncRoutes
       } else {
-        this.routes = filterRoute(asyncRoutes, accessRouteNames)
+        this.routes = filterRoute(asyncRoutes, names)
       }
 
       this.routes.forEach(route => {

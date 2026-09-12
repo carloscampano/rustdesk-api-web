@@ -380,7 +380,16 @@
     "One": "Num"
   },
   "Ip": {
-    "One": "Ip"
+    "One": "IP"
+  },
+  "Country": {
+    "One": "Country"
+  },
+  "Isp": {
+    "One": "Provider"
+  },
+  "PublicIp": {
+    "One": "Public IP"
   },
   "FileName": {
     "One": "File Name"
@@ -478,8 +487,11 @@
   "Captcha": {
     "One": "Captcha"
   },
+  "Home": {
+    "One": "Home"
+  },
   "ServerCmd": {
-    "One": "Server Cmd"
+    "One": "RustDesk settings"
   },
   "Simple": {
     "One": "Simple"

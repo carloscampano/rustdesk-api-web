@@ -25,6 +25,7 @@
   import { changeCurPwd } from '@/api/user'
   import { useUserStore } from '@/store/user'
   import { T } from '@/utils/i18n'
+  import { hardLogoutRedirect } from '@/utils/auth'
 
   const props = defineProps({
     visible: Boolean,
@@ -109,8 +110,8 @@
       autofocus: true,
       confirmButtonText: 'OK',
       callback: (action) => {
-        userStore.logout()
-        window.location.reload()
+        userStore.logout().catch(() => {})
+        hardLogoutRedirect()
       },
     })
   }

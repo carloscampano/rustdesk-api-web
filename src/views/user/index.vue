@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div class="rd-page">
+    <header class="rd-page-head">
+      <div>
+        <h1>Usuarios</h1>
+        <p>{{ listRes.total }} usuarios · {{ listRes.groups?.length || 0 }} grupos</p>
+      </div>
+    </header>
     <el-card class="list-query" shadow="hover">
       <el-form inline label-width="80px">
         <el-form-item :label="T('Username')">
@@ -36,13 +42,15 @@
         <el-table-column prop="remark" :label="T('Remark')" align="center"/>
         <el-table-column prop="created_at" :label="T('CreatedAt')" align="center"/>
         <el-table-column prop="updated_at" :label="T('UpdatedAt')" align="center"/>
-        <el-table-column :label="T('Actions')" align="center" width="650">
+        <el-table-column :label="T('Actions')" align="right" width="176" class-name="table-actions" fixed="right">
           <template #default="{row}">
-            <el-button @click="toTag(row)">{{ T('UserTags') }}</el-button>
-            <el-button @click="toAddressBook(row)">{{ T('UserAddressBook') }}</el-button>
-            <el-button @click="toEdit(row)">{{ T('Edit') }}</el-button>
-            <el-button type="warning" @click="changePass(row)">{{ T('ResetPassword') }}</el-button>
-            <el-button type="danger" @click="remove(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="tag" :title="T('UserTags')" @click="toTag(row)"/>
+              <icon-btn name="book" :title="T('UserAddressBook')" @click="toAddressBook(row)"/>
+              <icon-btn name="edit" :title="T('Edit')" @click="toEdit(row)"/>
+              <icon-btn name="key" :title="T('ResetPassword')" @click="changePass(row)"/>
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="remove(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>

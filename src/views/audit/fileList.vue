@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div class="rd-page">
+    <header class="rd-page-head">
+      <div>
+        <h1>Auditoría · Archivos</h1>
+        <p>{{ listRes.total.toLocaleString() }} transferencias</p>
+      </div>
+    </header>
     <el-card class="list-query" shadow="hover">
       <el-form inline label-width="80px">
         <el-form-item :label="T('Peer')">
@@ -64,9 +70,11 @@
         <el-table-column prop="path" :label="T('Path')" align="center" width="150" show-overflow-tooltip/>
         <el-table-column prop="uuid" label="uuid" align="center" width="120" show-overflow-tooltip/>
         <el-table-column prop="created_at" :label="T('CreatedAt')" align="center" min-width="120"/>
-        <el-table-column :label="T('Actions')" align="center" width="150" fixed="right">
+        <el-table-column :label="T('Actions')" align="right" width="56" class-name="table-actions" fixed="right">
           <template #default="{row}">
-            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="del(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>

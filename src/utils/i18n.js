@@ -18,7 +18,8 @@ const trans = {
 }
 export function T (key, params, num = 0) {
   const appStore = useAppStore()
-  const lang = appStore.setting.lang
+  const raw = appStore.setting.lang
+  const lang = trans[raw] ? raw : (trans[String(raw || '').split('-')[0]] ? String(raw).split('-')[0] : 'es')
   const tran = trans[lang]?.[key]
   if (!tran) {
     return key

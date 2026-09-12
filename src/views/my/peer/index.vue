@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div class="rd-page">
+    <header class="rd-page-head">
+      <div>
+        <h1>Mis dispositivos</h1>
+        <p>{{ allRows.length }} equipos</p>
+      </div>
+    </header>
     <el-card class="list-query" shadow="hover">
       <el-form inline label-width="150px">
         <el-form-item label="ID">
@@ -29,38 +35,39 @@
       </el-form>
     </el-card>
     <el-card class="list-body" shadow="hover">
-      <el-table :data="listRes.list" v-loading="listRes.loading" border size="small" @selection-change="handleSelectionChange">
+      <el-table :data="listRes.list" v-loading="listRes.loading" border size="small" @selection-change="handleSelectionChange" @sort-change="handleSortChange">
         <el-table-column type="selection" width="55" align="center"/>
-        <el-table-column prop="id" label="ID" align="center" width="150">
+        <el-table-column prop="id" sortable="custom" label="ID" align="center" width="150">
           <template #default="{row}">
             <span>{{ row.id }} <el-icon @click="handleClipboard(row.id, $event)"><CopyDocument/></el-icon></span>
           </template>
         </el-table-column>
-        <el-table-column prop="cpu" label="CPU" align="center" width="100" show-overflow-tooltip/>
-        <el-table-column prop="hostname" :label="T('Hostname')" align="center" width="120"/>
-        <el-table-column prop="memory" :label="T('Memory')" align="center" width="120"/>
-        <el-table-column prop="os" :label="T('Os')" align="center" width="120" show-overflow-tooltip/>
-        <el-table-column prop="last_online_time" :label="T('LastOnlineTime')" align="center" min-width="120">
+        <el-table-column prop="cpu" sortable="custom" label="CPU" align="center" width="100" show-overflow-tooltip/>
+        <el-table-column prop="hostname" sortable="custom" :label="T('Hostname')" align="center" width="120"/>
+        <el-table-column prop="memory" sortable="custom" :label="T('Memory')" align="center" width="120"/>
+        <el-table-column prop="os" sortable="custom" :label="T('Os')" align="center" width="120" show-overflow-tooltip/>
+        <el-table-column prop="last_online_time" sortable="custom" :label="T('LastOnlineTime')" align="center" min-width="120">
           <template #default="{row}">
             <div class="last_oline_time">
               <span> {{ row.last_online_time ? timeAgo(row.last_online_time * 1000) : '-' }}</span> <span class="dot" :class="{red: timeDis(row.last_online_time) >= 60, green: timeDis(row.last_online_time)< 60}"></span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="last_online_ip" :label="T('LastOnlineIp')" align="center" min-width="120"/>
-        <el-table-column prop="username" :label="T('Username')" align="center" width="120"/>
-        <el-table-column prop="uuid" :label="T('Uuid')" align="center" width="120" show-overflow-tooltip/>
-        <el-table-column prop="version" :label="T('Version')" align="center" width="80"/>
-        <el-table-column prop="alias" :label="T('Alias')" align="center" width="80"/>
-        <el-table-column prop="created_at" :label="T('CreatedAt')" align="center" width="150"/>
-        <el-table-column prop="updated_at" :label="T('UpdatedAt')" align="center" width="150"/>
-        <el-table-column :label="T('Actions')" align="center" width="500" class-name="table-actions" fixed="right">
+        <el-table-column prop="last_online_ip" sortable="custom" :label="T('LastOnlineIp')" align="center" min-width="120"/>
+        <el-table-column prop="username" sortable="custom" :label="T('Username')" align="center" width="120"/>
+        <el-table-column prop="uuid" sortable="custom" :label="T('Uuid')" align="center" width="120" show-overflow-tooltip/>
+        <el-table-column prop="version" sortable="custom" :label="T('Version')" align="center" width="80"/>
+        <el-table-column prop="alias" sortable="custom" :label="T('Alias')" align="center" width="80"/>
+        <el-table-column prop="created_at" sortable="custom" :label="T('CreatedAt')" align="center" width="150"/>
+        <el-table-column prop="updated_at" sortable="custom" :label="T('UpdatedAt')" align="center" width="150"/>
+        <el-table-column :label="T('Actions')" align="right" width="148" class-name="table-actions" fixed="right">
           <template #default="{row}">
-            <el-button type="success" @click="connectByClient(row.id)">{{ T('Link') }}</el-button>
-            <el-button v-if="appStore.setting.appConfig.web_client" type="success" @click="toWebClientLink(row)">Web Client</el-button>
-            <el-button type="primary" @click="toAddressBook(row)">{{ T('AddToAddressBook') }}</el-button>
-            <el-button @click="toView(row)">{{ T('View') }}</el-button>
-            <!--            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>-->
+            <div class="rd-actions">
+              <icon-btn name="connect" kind="primary" :title="T('Link')" @click="connectByClient(row.id)"/>
+              <icon-btn v-if="appStore.setting.appConfig.web_client" name="web" title="Web Client" @click="toWebClientLink(row)"/>
+              <icon-btn name="book" :title="T('AddToAddressBook')" @click="toAddressBook(row)"/>
+              <icon-btn name="view" :title="T('View')" @click="toView(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -184,12 +191,14 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { toWebClientLink } from '@/utils/webclient'
   import { T } from '@/utils/i18n'
+  import { compareBy } from '@/utils/localSort'
   import { timeAgo } from '@/utils/time'
   import { jsonToCsv, downBlob } from '@/utils/file'
   import { useRepositories as useABRepositories } from '@/views/address_book/index'
   import { useAppStore } from '@/store/app'
   import { connectByClient } from '@/utils/peer'
   import { CopyDocument } from '@element-plus/icons'
+  import IconBtn from '@/components/iconBtn.vue'
   import { handleClipboard } from '@/utils/clipboard'
   import { batchCreateFromPeers } from '@/api/my/address_book'
 
@@ -205,13 +214,28 @@
     hostname: '',
   })
 
+  // ponytail: fetch every row matching the filters once, sort + paginate in the browser (backend has no order_by)
+  const allRows = ref([])
+  const sort = reactive({ prop: '', order: '' })
+  const applyList = () => {
+    const rows = sort.prop && sort.order ? [...allRows.value].sort(compareBy(sort.prop, sort.order)) : allRows.value
+    listRes.total = rows.length
+    const start = (listQuery.page - 1) * listQuery.page_size
+    listRes.list = rows.slice(start, start + listQuery.page_size)
+  }
+  const handleSortChange = ({ prop, order }) => {
+    sort.prop = order ? prop : ''
+    sort.order = order || ''
+    listQuery.page = 1
+    applyList()
+  }
   const getList = async () => {
     listRes.loading = true
-    const res = await list(listQuery).catch(_ => false)
+    const res = await list({ ...listQuery, page: 1, page_size: 10000 }).catch(_ => false)
     listRes.loading = false
     if (res) {
-      listRes.list = res.data.list
-      listRes.total = res.data.total
+      allRows.value = res.data.list
+      applyList()
     }
   }
   const handlerQuery = () => {
@@ -241,7 +265,7 @@
   onMounted(getList)
   onActivated(getList)
 
-  watch(() => listQuery.page, getList)
+  watch(() => listQuery.page, applyList)
 
   watch(() => listQuery.page_size, handlerQuery)
 

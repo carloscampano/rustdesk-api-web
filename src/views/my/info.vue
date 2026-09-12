@@ -20,10 +20,12 @@
                 <el-tag v-else type="danger">{{ T('NoBind') }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column :label="T('Actions')" align="center" width="200">
+            <el-table-column :label="T('Actions')" align="right" width="56" class-name="table-actions">
               <template #default="{ row }">
-                <el-button v-if="row.status === 1" type="danger" size="small" @click="toUnBind(row)">{{ T('UnBind') }}</el-button>
-                <el-button v-else type="success" size="small" @click="toBind(row)">{{ T('ToBind') }}</el-button>
+                <div class="rd-actions">
+                  <icon-btn v-if="row.status === 1" name="unbind" kind="danger" :title="T('UnBind')" @click="toUnBind(row)"/>
+                  <icon-btn v-else name="bind" kind="primary" :title="T('ToBind')" @click="toBind(row)"/>
+                </div>
               </template>
             </el-table-column>
           </el-table>

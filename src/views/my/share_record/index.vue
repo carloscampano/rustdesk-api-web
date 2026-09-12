@@ -19,9 +19,11 @@
             <el-tag :type="expired(row)?'info':'success'">{{ row.expire ? row.expire : T('Forever') }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="T('Actions')" align="center" width="400">
+        <el-table-column :label="T('Actions')" align="right" width="56" class-name="table-actions">
           <template #default="{row}">
-            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="del(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>

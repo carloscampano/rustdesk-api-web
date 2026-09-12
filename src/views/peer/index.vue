@@ -1,14 +1,23 @@
 <template>
-  <div>
+  <div class="rd-page">
+    <header class="rd-page-head">
+      <div>
+        <h1>Peers</h1>
+        <p>{{ allRows.length }} equipos · {{ onlineCount }} en línea</p>
+      </div>
+      <div class="rd-page-actions">
+        <el-button type="primary" @click="toAdd">{{ T('Add') }}</el-button>
+      </div>
+    </header>
     <el-card class="list-query" shadow="hover">
-      <el-form inline label-width="60px">
+      <el-form inline label-width="auto" class="rd-filters">
         <el-form-item label="ID">
           <el-input v-model="listQuery.id" clearable/>
         </el-form-item>
         <el-form-item :label="T('Hostname')">
           <el-input v-model="listQuery.hostname" clearable/>
         </el-form-item>
-        <el-form-item :label="T('LastOnlineTime')" label-width="100px">
+        <el-form-item :label="T('LastOnlineTime')">
           <el-select v-model="listQuery.time_ago" clearable>
             <el-option
                 v-for="item in timeFilters"
@@ -27,86 +36,89 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handlerQuery">{{ T('Filter') }}</el-button>
-          <el-button type="danger" @click="toAdd">{{ T('Add') }}</el-button>
-          <el-button type="success" @click="toExport">{{ T('Export') }}</el-button>
-          <el-popover :visible="showImport" placement="bottom" :width="600">
-            <el-upload
-                class="upload-demo"
-                drag
-                accept=".csv"
-                :before-upload="parseCsv"
-            >
-              <el-icon class="el-icon--upload">
-                <upload-filled/>
-              </el-icon>
-              <div class="el-upload__text">
-                {{ T('Drop file here or click to upload') }}
-              </div>
-              <template #tip>
-                <div class="el-upload__tip">
-                  {{ T('Please upload csv file') }} <br>
-                  {{ T('Columns') }}: <span style="font-weight: bold;font-size: 15px">id,cpu,hostname,memory,os,username,uuid,version,group_id</span>
-                  <br>
-                  <span>{{ T('You can reference export file') }}</span>
-                </div>
-              </template>
-            </el-upload>
-            <el-button @click="showImport=false" type="primary">{{ T('Cancel') }}</el-button>
-            <template #reference>
-              <el-button @click="showImport=true" type="danger" :icon="ArrowDown">{{ T('Import') }}</el-button>
-            </template>
-          </el-popover>
-          <el-button type="danger" @click="toBatchDelete">{{ T('BatchDelete') }}</el-button>
-          <el-button type="primary" @click="toBatchAddToAB">{{ T('BatchAddToAB') }}</el-button>
         </el-form-item>
       </el-form>
+      <div class="rd-toolbar">
+        <el-button @click="toExport">{{ T('Export') }}</el-button>
+        <el-popover :visible="showImport" placement="bottom" :width="600">
+          <el-upload
+              class="upload-demo"
+              drag
+              accept=".csv"
+              :before-upload="parseCsv"
+          >
+            <el-icon class="el-icon--upload">
+              <upload-filled/>
+            </el-icon>
+            <div class="el-upload__text">
+              {{ T('Drop file here or click to upload') }}
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                {{ T('Please upload csv file') }} <br>
+                {{ T('Columns') }}: <span style="font-weight: bold;font-size: 15px">id,cpu,hostname,memory,os,username,uuid,version,group_id</span>
+                <br>
+                <span>{{ T('You can reference export file') }}</span>
+              </div>
+            </template>
+          </el-upload>
+          <el-button @click="showImport=false" type="primary">{{ T('Cancel') }}</el-button>
+          <template #reference>
+            <el-button @click="showImport=true">{{ T('Import') }}</el-button>
+          </template>
+        </el-popover>
+        <el-button @click="toBatchAddToAB">{{ T('BatchAddToAB') }}</el-button>
+        <el-button @click="toBatchDelete">{{ T('BatchDelete') }}</el-button>
+      </div>
     </el-card>
     <el-card class="list-body" shadow="hover">
       <div style="text-align: right; margin-bottom: 10px">
         <el-button :icon="Setting" @click="showColumnSetting"></el-button>
       </div>
 
-      <el-table :data="listRes.list" v-loading="listRes.loading" border size="small" @selection-change="handleSelectionChange">
+      <el-table :data="listRes.list" v-loading="listRes.loading" border size="small" @selection-change="handleSelectionChange" @sort-change="handleSortChange">
         <el-table-column type="selection" width="55" align="center"/>
         <template v-for="c in visibleColumns.filter(cc => cc.visible)" :key="c">
-          <el-table-column v-if="c.name==='id'" prop="id" label="ID" align="center" width="150">
+          <el-table-column v-if="c.name==='id'" prop="id" sortable="custom" label="ID" align="center" width="150">
             <template #default="{row}">
               <span>{{ row.id }} <el-icon @click="handleClipboard(row.id, $event)"><CopyDocument/></el-icon></span>
             </template>
           </el-table-column>
-          <el-table-column v-if="c.name==='cpu'" prop="cpu" label="CPU" align="center" width="100" show-overflow-tooltip/>
-          <el-table-column v-if="c.name==='hostname'" prop="hostname" :label="T('Hostname')" align="center" width="120"/>
-          <el-table-column v-if="c.name==='memory'" prop="memory" :label="T('Memory')" align="center" width="120"/>
-          <el-table-column v-if="c.name==='os'" prop="os" :label="T('Os')" align="center" width="120" show-overflow-tooltip/>
-          <el-table-column v-if="c.name==='last_online_time'" prop="last_online_time" :label="T('LastOnlineTime')" align="center" min-width="120">
+          <el-table-column v-if="c.name==='cpu'" prop="cpu" sortable="custom" label="CPU" align="center" width="100" show-overflow-tooltip/>
+          <el-table-column v-if="c.name==='hostname'" prop="hostname" sortable="custom" :label="T('Hostname')" align="center" width="120"/>
+          <el-table-column v-if="c.name==='memory'" prop="memory" sortable="custom" :label="T('Memory')" align="center" width="120"/>
+          <el-table-column v-if="c.name==='os'" prop="os" sortable="custom" :label="T('Os')" align="center" width="120" show-overflow-tooltip/>
+          <el-table-column v-if="c.name==='last_online_time'" prop="last_online_time" sortable="custom" :label="T('LastOnlineTime')" align="center" min-width="120">
             <template #default="{row}">
               <div class="last_oline_time">
                 <span> {{ row.last_online_time ? timeAgo(row.last_online_time * 1000) : '-' }}</span> <span class="dot" :class="{red: timeDis(row.last_online_time) >= 60, green: timeDis(row.last_online_time)< 60}"></span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column v-if="c.name==='last_online_ip'" prop="last_online_ip" :label="T('LastOnlineIp')" align="center" min-width="120"/>
-          <el-table-column v-if="c.name==='username'" prop="username" :label="T('Username')" align="center" width="120"/>
+          <el-table-column v-if="c.name==='last_online_ip'" prop="last_online_ip" sortable="custom" :label="T('LastOnlineIp')" align="center" min-width="120"/>
+          <el-table-column v-if="c.name==='username'" prop="username" sortable="custom" :label="T('Username')" align="center" width="120"/>
           <el-table-column v-if="c.name==='group_id'" prop="group_id" :label="T('Group')" align="center" width="120">
             <template #default="{row}">
               <span v-if="row.group_id"> <el-tag>{{ groupListRes.list?.find(g => g.id === row.group_id)?.name }} </el-tag> </span>
               <span v-else> - </span>
             </template>
           </el-table-column>
-          <el-table-column v-if="c.name==='uuid'" prop="uuid" :label="T('Uuid')" align="center" width="120" show-overflow-tooltip/>
-          <el-table-column v-if="c.name==='version'" prop="version" :label="T('Version')" align="center" width="80"/>
-          <el-table-column v-if="c.name==='alias'" prop="alias" :label="T('Alias')" align="center" width="80"/>
-          <el-table-column v-if="c.name==='created_at'" prop="created_at" :label="T('CreatedAt')" align="center" width="150"/>
-          <el-table-column v-if="c.name==='updated_at'" prop="updated_at" :label="T('UpdatedAt')" align="center" width="150"/>
+          <el-table-column v-if="c.name==='uuid'" prop="uuid" sortable="custom" :label="T('Uuid')" align="center" width="120" show-overflow-tooltip/>
+          <el-table-column v-if="c.name==='version'" prop="version" sortable="custom" :label="T('Version')" align="center" width="80"/>
+          <el-table-column v-if="c.name==='alias'" prop="alias" sortable="custom" :label="T('Alias')" align="center" width="80"/>
+          <el-table-column v-if="c.name==='created_at'" prop="created_at" sortable="custom" :label="T('CreatedAt')" align="center" width="150"/>
+          <el-table-column v-if="c.name==='updated_at'" prop="updated_at" sortable="custom" :label="T('UpdatedAt')" align="center" width="150"/>
         </template>
 
-        <el-table-column :label="T('Actions')" align="center" width="500" class-name="table-actions" fixed="right">
+        <el-table-column :label="T('Actions')" align="right" width="188" class-name="table-actions" fixed="right">
           <template #default="{row}">
-            <el-button type="success" @click="connectByClient(row.id)">{{ T('Link') }}</el-button>
-            <el-button v-if="appStore.setting.appConfig.web_client" type="success" @click="toWebClientLink(row)">Web Client</el-button>
-            <el-button type="primary" @click="toAddressBook(row)">{{ T('AddToAddressBook') }}</el-button>
-            <el-button @click="toEdit(row)">{{ T('Edit') }}</el-button>
-            <el-button type="danger" @click="del(row)">{{ T('Delete') }}</el-button>
+            <div class="rd-actions">
+              <icon-btn name="connect" kind="primary" :title="T('Link')" @click="connectByClient(row.id)"/>
+              <icon-btn v-if="appStore.setting.appConfig.web_client" name="web" title="Web Client" @click="toWebClientLink(row)"/>
+              <icon-btn name="book" :title="T('AddToAddressBook')" @click="toAddressBook(row)"/>
+              <icon-btn name="edit" :title="T('Edit')" @click="toEdit(row)"/>
+              <icon-btn name="delete" kind="danger" :title="T('Delete')" @click="del(row)"/>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -236,6 +248,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { toWebClientLink } from '@/utils/webclient'
   import { T } from '@/utils/i18n'
+  import { compareBy } from '@/utils/localSort'
   import { timeAgo } from '@/utils/time'
   import { jsonToCsv, downBlob } from '@/utils/file'
   import { loadAllUsers } from '@/global'
@@ -247,6 +260,7 @@
   import { useRepositories as useCollectionRepositories } from '@/views/address_book/collection'
   import createABForm from '@/views/peer/createABForm.vue'
   import { UploadFilled } from '@element-plus/icons-vue'
+  import IconBtn from '@/components/iconBtn.vue'
 
   const appStore = useAppStore()
 
@@ -283,13 +297,28 @@
     ip: '',
   })
 
+  // ponytail: fetch every row matching the filters once, sort + paginate in the browser (backend has no order_by)
+  const allRows = ref([])
+  const sort = reactive({ prop: '', order: '' })
+  const applyList = () => {
+    const rows = sort.prop && sort.order ? [...allRows.value].sort(compareBy(sort.prop, sort.order)) : allRows.value
+    listRes.total = rows.length
+    const start = (listQuery.page - 1) * listQuery.page_size
+    listRes.list = rows.slice(start, start + listQuery.page_size)
+  }
+  const handleSortChange = ({ prop, order }) => {
+    sort.prop = order ? prop : ''
+    sort.order = order || ''
+    listQuery.page = 1
+    applyList()
+  }
   const getList = async () => {
     listRes.loading = true
-    const res = await list(listQuery).catch(_ => false)
+    const res = await list({ ...listQuery, page: 1, page_size: 10000 }).catch(_ => false)
     listRes.loading = false
     if (res) {
-      listRes.list = res.data.list
-      listRes.total = res.data.total
+      allRows.value = res.data.list
+      applyList()
     }
   }
   const handlerQuery = () => {
@@ -319,7 +348,7 @@
   onMounted(getList)
   onActivated(getList)
 
-  watch(() => listQuery.page, getList)
+  watch(() => listQuery.page, applyList)
 
   watch(() => listQuery.page_size, handlerQuery)
 
@@ -372,6 +401,8 @@
     let after = new Date(time * 1000).getTime()
     return (now - after) / 1000
   }
+
+  const onlineCount = computed(() => allRows.value.filter((row) => timeDis(row.last_online_time) < 60).length)
 
   const timeFilters = computed(() => [
     { text: T('MinutesLess', { param: 1 }, 1), value: -60 },

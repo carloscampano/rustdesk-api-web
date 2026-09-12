@@ -95,17 +95,17 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #2d3a4b;
+  background-color: #f4f0ea;
   padding: 20px;
   box-sizing: border-box;
 }
 
 .login-card {
-  width: 360px;
-  background-color: #283342;
+  width: 400px;
+  background-color: #ffffff;
   padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(60, 45, 30, 0.06), 0 0 0 1px rgba(60, 45, 30, 0.05);
   text-align: center;
 }
 
@@ -140,18 +140,8 @@ h1 {
 
 .el-form-item {
   ::v-deep(.el-form-item__label) {
-    color: #fff;
-  }
-
-  .el-input {
-    ::v-deep(.el-input__wrapper) {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-    }
-
-    ::v-deep(input) {
-      color: #fff;
-    }
+    color: #6e655d;
+    font-weight: 600;
   }
 }
 </style>

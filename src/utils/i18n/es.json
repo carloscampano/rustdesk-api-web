@@ -12,7 +12,7 @@
     "One": "Confirmar"
   },
   "Username": {
-    "One": "Nombre de usuario"
+    "One": "Usuario"
   },
   "Password": {
     "One": "Contraseña"
@@ -380,7 +380,16 @@
     "One": "Número"
   },
   "Ip": {
-    "One": "Ip"
+    "One": "IP"
+  },
+  "Country": {
+    "One": "País"
+  },
+  "Isp": {
+    "One": "Proveedor"
+  },
+  "PublicIp": {
+    "One": "IP pública"
   },
   "FileName": {
     "One": "Nombre del archivo"
@@ -481,8 +490,11 @@
   "Captcha": {
     "One": "Captcha"
   },
+  "Home": {
+    "One": "Inicio"
+  },
   "ServerCmd": {
-    "One": "Comando del servidor"
+    "One": "Ajustes de RustDesk"
   },
   "Simple": {
     "One": "Simple"

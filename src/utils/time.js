@@ -1,5 +1,55 @@
 import { T } from '@/utils/i18n'
 
+export const CHILE_TZ = 'America/Santiago'
+
+export function parseApiTime (value) {
+  if (!value && value !== 0) return 0
+  if (typeof value === 'number') {
+    return value > 1e12 ? value : value * 1000
+  }
+  const s = String(value).trim()
+  if (!s || s === '-') return 0
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(s)) {
+    const ms = Date.parse(s.replace(' ', 'T') + 'Z')
+    return Number.isNaN(ms) ? 0 : ms
+  }
+  const ms = Date.parse(s)
+  return Number.isNaN(ms) ? 0 : ms
+}
+
+export function formatChile (ms, options = {}) {
+  if (!ms) return '—'
+  return new Intl.DateTimeFormat('es-CL', {
+    timeZone: CHILE_TZ,
+    hour12: false,
+    ...options,
+  }).format(new Date(ms))
+}
+
+export function formatChileTime (ms) {
+  return formatChile(ms, { hour: '2-digit', minute: '2-digit' })
+}
+
+export function formatChileDateTime (ms) {
+  return formatChile(ms, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+}
+
+export function chileYmd (ms = Date.now()) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: CHILE_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(ms))
+}
+
 export function timeAgo (time) {
   let now = new Date().getTime()
   let after = new Date(time).getTime()
