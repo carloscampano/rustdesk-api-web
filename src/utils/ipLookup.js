@@ -1,3 +1,5 @@
+import request from '@/utils/request'
+
 const CACHE_KEY = 'rd-ip-geo-v1'
 const mem = new Map()
 let cacheLoaded = false
@@ -47,18 +49,13 @@ export function geoTarget (row) {
   return row?.ip
 }
 
-async function fetchOne (ip) {
-  const url = `https://ipwho.is/${encodeURIComponent(ip)}?lang=es&fields=success,country,country_code,connection,flag`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(String(res.status))
-  const data = await res.json()
-  if (!data.success) throw new Error('lookup failed')
-  return {
-    country: data.country || '',
-    countryCode: data.country_code || '',
-    isp: data.connection?.isp || data.connection?.org || '',
-    flag: data.flag?.emoji || '',
-  }
+async function fetchBatch (ips) {
+  const res = await request({
+    url: '/geo/lookup',
+    method: 'post',
+    data: { ips },
+  })
+  return res.data || {}
 }
 
 export function cachedGeo (ip) {
@@ -84,21 +81,21 @@ export async function lookupIps (ips, onEach) {
     pending.push(ip)
   }
   if (!pending.length) return
-  let i = 0
-  const workers = Math.min(4, pending.length)
-  const run = async () => {
-    while (i < pending.length) {
-      const ip = pending[i++]
-      try {
-        const geo = await fetchOne(ip)
+  try {
+    const data = await fetchBatch(pending)
+    for (const ip of pending) {
+      const geo = data[ip]
+      if (geo && !geo.error) {
         mem.set(ip, geo)
         onEach?.(ip, geo)
-      } catch (_) {
-        const geo = { country: '', countryCode: '', isp: '', flag: '', error: true }
-        onEach?.(ip, geo)
+      } else {
+        onEach?.(ip, geo || { country: '', countryCode: '', isp: '', flag: '', error: true })
       }
     }
+  } catch (_) {
+    for (const ip of pending) {
+      onEach?.(ip, { country: '', countryCode: '', isp: '', flag: '', error: true })
+    }
   }
-  await Promise.all(Array.from({ length: workers }, run))
   saveCache()
 }

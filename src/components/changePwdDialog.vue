@@ -109,8 +109,8 @@
     ElMessageBox.alert(T('OperationSuccess'), T('ChangePassword'), {
       autofocus: true,
       confirmButtonText: 'OK',
-      callback: (action) => {
-        userStore.logout().catch(() => {})
+      callback: async () => {
+        await userStore.logout().catch(() => {})
         hardLogoutRedirect()
       },
     })

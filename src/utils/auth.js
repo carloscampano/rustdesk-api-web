@@ -3,12 +3,6 @@ const OidcCode = 'oidc_code'
 const OidcCodeExpiry = 'oidc_code_expiry';
 const PortalCookie = 'rd_portal'
 
-function writePortalCookie (token) {
-  const maxAge = 14 * 24 * 60 * 60
-  const secure = location.protocol === 'https:' ? '; Secure' : ''
-  document.cookie = `${PortalCookie}=${encodeURIComponent(token)}; Path=/; SameSite=Lax; Max-Age=${maxAge}${secure}`
-}
-
 function clearPortalCookie () {
   const paths = ['/', '/_admin', '/_admin/', '/webclient', '/webclient/']
   const extras = ['', '; Secure']
@@ -20,16 +14,11 @@ function clearPortalCookie () {
 }
 
 export function getToken () {
-  const token = localStorage.getItem(TokenKey)
-  if (token && !document.cookie.split('; ').some((row) => row.startsWith(`${PortalCookie}=`) && row.length > PortalCookie.length + 1)) {
-    writePortalCookie(token)
-  }
-  return token
+  return localStorage.getItem(TokenKey)
 }
 
 export function setToken (token) {
   localStorage.setItem(`wc-option:local:access_token`, token)
-  writePortalCookie(token)
   return localStorage.setItem(TokenKey, token)
 }
 

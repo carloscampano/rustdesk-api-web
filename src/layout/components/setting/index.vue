@@ -67,8 +67,8 @@
   const user = userStore
   const appStore = useAppStore()
 
-  const logout = () => {
-    userStore.logout().catch(() => {})
+  const logout = async () => {
+    await userStore.logout().catch(() => {})
     hardLogoutRedirect()
   }
 

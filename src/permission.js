@@ -25,7 +25,7 @@ router.beforeEach(async (to, from, next) => {
     if (whiteList.indexOf(to.path) !== -1) {
       next()
     } else {
-      next(`/login?redirect=${to.path}`)
+      next(`/login?redirect=${encodeURIComponent(to.path)}`)
     }
 
   } else {
@@ -36,8 +36,8 @@ router.beforeEach(async (to, from, next) => {
     if (!userStore.route_names.length) {
       const info = await userStore.info()
       if (!info) {
-        userStore.logout()
-        next(`/login?redirect=${to.path}`)
+        await userStore.logout().catch(() => {})
+        next(`/login?redirect=${encodeURIComponent(to.path)}`)
       } else {
         next({ ...to, replace: true })
       }

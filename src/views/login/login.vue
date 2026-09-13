@@ -49,6 +49,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { loginOptions, captcha } from '@/api/login'
   import { getCode, removeCode } from '@/utils/auth'
+  import { safeLoginRedirect } from '@/utils/safeRedirect'
 
   const oauthInfo = ref({})
   const userStore = useUserStore()
@@ -88,13 +89,13 @@
     return '/'
   }
   const goAfterLogin = () => {
-    const r = typeof route.query.redirect === 'string' ? route.query.redirect : ''
-    if (r.startsWith('/webclient') || r.startsWith('http://') || r.startsWith('https://')) {
-      window.location.replace(r)
+    const dest = safeLoginRedirect(route.query.redirect)
+    if (dest?.href) {
+      window.location.replace(dest.href)
       return
     }
-    if (r && r !== '/404' && r !== '/login') {
-      router.push({ path: r, replace: true })
+    if (dest?.path) {
+      router.push({ path: dest.path, replace: true })
       return
     }
     router.push({ path: homePath(), replace: true })

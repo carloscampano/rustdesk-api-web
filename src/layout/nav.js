@@ -18,6 +18,7 @@ export const adminNav = [
   { name: 'Oauth', path: '/oauth', label: 'OAuth', icon: 'link' },
   { name: 'UserToken', path: '/userToken', label: 'Tokens', icon: 'ticket' },
   { name: 'ShareRecord', path: '/shareRecord', label: 'Compartidos', icon: 'share' },
+  { name: 'WebClient', href: '/webclient/', label: 'Cliente web', icon: 'webclient' },
 ]
 
 export const userNav = [
@@ -25,6 +26,7 @@ export const userNav = [
   { name: 'MyAddressBookList', path: '/my/address_book', label: 'Mi libreta', icon: 'book' },
   { name: 'MyTagList', path: '/my/tag', label: 'Etiquetas', icon: 'tag' },
   { name: 'MyShareRecordList', path: '/my/shareRecord', label: 'Compartidos', icon: 'share' },
+  { name: 'WebClient', href: '/webclient/', label: 'Cliente web', icon: 'webclient' },
   { name: 'MyLoginLog', path: '/my/loginLog', label: 'Registros de acceso', icon: 'key' },
   { name: 'MyInfo', path: '/', label: 'Mi perfil', icon: 'user' },
 ]
@@ -45,6 +47,7 @@ export function filterNav (items, names) {
         if (!children.length) return null
         return { ...item, children }
       }
+      if (item.href) return item
       return names.includes(item.name) ? item : null
     })
     .filter(Boolean)

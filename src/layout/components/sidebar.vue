@@ -43,6 +43,12 @@
               </router-link>
             </template>
           </div>
+          <a v-else-if="item.href" :href="item.href" class="rd-nav-item" :title="collapsed ? item.label : ''">
+            <span class="rd-nav-left">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" v-html="icons[item.icon]"></svg>
+              <span>{{ item.label }}</span>
+            </span>
+          </a>
           <router-link v-else :to="item.path" class="rd-nav-item" :class="{ active: isActive(item) }" :title="collapsed ? item.label : ''">
             <span class="rd-nav-left">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" v-html="icons[item.icon]"></svg>
@@ -137,8 +143,8 @@
     { immediate: true },
   )
 
-  const logout = () => {
-    user.logout().catch(() => {})
+  const logout = async () => {
+    await user.logout().catch(() => {})
     hardLogoutRedirect()
   }
   const showChangePwd = () => {
